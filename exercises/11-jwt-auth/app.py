@@ -30,7 +30,7 @@ app = FastAPI(title="JWT Authentication API")
 # The secret comes from the environment. If it is not set, a random one is
 # generated on every start (tokens stop working after a restart).
 JWT_SECRET = os.environ.get("JWT_SECRET_KEY") or secrets.token_hex(32)  # from env; random per run if unset
-JWT_ALG = "_____"  # TODO: Which signing algorithm? (HMAC with SHA-256)
+JWT_ALG = "HS256"
 # Hint: HS256
 
 # Short-lived access tokens + longer-lived refresh tokens
@@ -213,7 +213,7 @@ def login(data: Credentials) -> LoginResponse:
 
 # TODO: Which HTTP method? (it creates a new token)
 # Hint: post (lowercase: @app.post)
-@app._____("/refresh")
+@app.post("/refresh")
 def refresh(token: Annotated[str, Depends(get_token)]) -> dict[str, str | int]:
     """
     Get a new access token - Requires a REFRESH token
@@ -221,7 +221,7 @@ def refresh(token: Annotated[str, Depends(get_token)]) -> dict[str, str | int]:
     Authorization: Bearer <refresh_token>
     An access token is rejected here, and a refresh token is rejected everywhere else.
     """
-    claims = decode_token(token, "_____")  # TODO: Accept ONLY refresh tokens here
+    claims = decode_token(token, "___")  # TODO: Accept ONLY refresh tokens here
     # Hint: refresh
     return {
         "access_token": create_access_token(claims["sub"]),
@@ -249,7 +249,7 @@ def logout(token: Annotated[str, Depends(get_token)]) -> dict[str, str]:
 
 @app.get("/profile")  # TODO: Protect it with the dependency that returns the user from an ACCESS token
 # Hint: get_current_user, defined above. Depends() takes the function itself, without ()
-def profile(user: Annotated[str, Depends(_____)]) -> dict[str, str]:
+def profile(user: Annotated[str, Depends(get_current_user)]) -> dict[str, str]:
     """
     Get current user's profile - Protected endpoint
 
